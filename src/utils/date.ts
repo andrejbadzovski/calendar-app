@@ -109,3 +109,15 @@ export function formatFullDate(date: Date): string {
   const weekday = WEEKDAY_LABELS[getWeekdayIndex(date)] ?? '';
   return `${weekday}, ${date.getDate()} ${MONTH_NAMES[date.getMonth()] ?? ''}`;
 }
+
+export function timeFromISO(iso: string): string {
+  const date = new Date(iso);
+  return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+export function combineDateAndTime(date: Date, time: string): Date {
+  const [hoursPart, minutesPart] = time.split(':');
+  const hours = Number(hoursPart);
+  const minutes = Number(minutesPart);
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes);
+}

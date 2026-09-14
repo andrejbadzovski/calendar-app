@@ -7,6 +7,7 @@ import { AuthNavigator } from './AuthNavigator';
 import { TabNavigator } from './TabNavigator';
 import { useAuth } from '@/features/auth/AuthContext';
 import { colors } from '@/theme';
+import { EventFormScreen } from '@/features/events/screens/EventFormScreen';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -29,6 +30,18 @@ export function RootNavigator() {
             name="Tabs"
             component={TabNavigator}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="EventForm"
+            component={EventFormScreen}
+            options={({ route }) => ({
+              title: route.params?.event ? 'Edit event' : 'New event',
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              headerStyle: { backgroundColor: colors.background },
+              headerTitleStyle: { color: colors.textPrimary },
+              headerTintColor: colors.primary,
+            })}
           />
         </Stack.Navigator>
       ) : (

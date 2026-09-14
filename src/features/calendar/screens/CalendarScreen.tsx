@@ -11,14 +11,24 @@ import { addDays, addMonths, formatFullDate, formatMonthYear, toDateKey } from '
 import { sortByStart } from '@/utils/events';
 import { spacing } from '@/theme';
 import type { CalendarEvent } from '@/types/event';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Button } from '@/components/ui/Button';
+import type { AppStackParamList } from '@/navigation/types';
 
 export function CalendarScreen() {
   const { user } = useAuth();
+  const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
   const [viewMode, setViewMode] = useState<CalendarViewMode>('month');
   const [visibleMonth, setVisibleMonth] = useState(() => new Date());
   const [selectedDate, setSelectedDate] = useState(() => new Date());
 
   const { eventsByDate, eventCountByDate, isLoading, error, refresh } = useEvents(user?.id);
+    useFocusEffect(
+    React.useCallback(() => {
+      void refresh();
+    }, [refresh]),
+  );
 
   const selectedEvents = useMemo(() => {
     const key = toDateKey(selectedDate);
@@ -53,7 +63,11 @@ export function CalendarScreen() {
   };
 
   const handleSelectEvent = (event: CalendarEvent) => {
-    console.log('selected event', event.id);
+    navigation.navigate('EventForm', { event });
+  };
+
+  const handleCreateEvent = () => {
+    navigation.navigate('EventForm', { dateISO: selectedDate.toISOString() });
   };
 
   const title =
@@ -91,6 +105,7 @@ export function CalendarScreen() {
           onRefresh={refresh}
         />
       </View>
+      <Button label="Add event" onPress={handleCreateEvent} />
     </Screen>
   );
 }

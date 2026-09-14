@@ -46,3 +46,40 @@ export function validatePasswordConfirmation(
   }
   return VALID;
 }
+
+const TIME_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+export function validateEventTitle(title: string): ValidationResult {
+  const trimmed = title.trim();
+
+  if (trimmed.length === 0) {
+    return { isValid: false, error: 'Title is required' };
+  }
+  if (trimmed.length > 80) {
+    return { isValid: false, error: 'Title must be 80 characters or fewer' };
+  }
+  return VALID;
+}
+
+export function validateTime(value: string): ValidationResult {
+  if (value.trim().length === 0) {
+    return { isValid: false, error: 'Time is required' };
+  }
+  if (!TIME_PATTERN.test(value.trim())) {
+    return { isValid: false, error: 'Use 24-hour format, e.g. 14:30' };
+  }
+  return VALID;
+}
+
+export function validateTimeRange(start: string, end: string): ValidationResult {
+  const startResult = validateTime(start);
+  const endResult = validateTime(end);
+
+  if (!startResult.isValid || !endResult.isValid) {
+    return VALID;
+  }
+  if (end <= start) {
+    return { isValid: false, error: 'End time must be after start time' };
+  }
+  return VALID;
+}

@@ -1,3 +1,5 @@
+import type { CalendarEvent } from '@/types/event';
+
 export type AuthStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
@@ -10,7 +12,7 @@ export type TabParamList = {
 
 export type AppStackParamList = {
   Tabs: undefined;
-  EventForm: { eventId?: string; dateISO?: string };
+  EventForm: { event?: CalendarEvent; dateISO?: string } | undefined;
 };
 
 declare global {

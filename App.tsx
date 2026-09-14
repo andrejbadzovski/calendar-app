@@ -1,44 +1,39 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Screen } from '@/components/ui/Screen';
+import { Text } from '@/components/ui/Text';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { spacing } from '@/theme';
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <Screen keyboardAvoiding scrollable>
+        <View style={styles.container}>
+          <Text variant="h1">Design System</Text>
+          <Text variant="body" color="textSecondary">
+            Preview of base components
+          </Text>
+
+          <Input label="Email" placeholder="you@example.com" keyboardType="email-address" />
+          <Input label="Password" placeholder="••••••••" secureTextEntry error="Password is too short" />
+
+          <Button label="Primary" onPress={() => {}} />
+          <Button label="Secondary" variant="secondary" onPress={() => {}} />
+          <Button label="Loading" loading onPress={() => {}} />
+          <Button label="Disabled" disabled onPress={() => {}} />
+        </View>
+      </Screen>
     </SafeAreaProvider>
-  );
-}
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    gap: spacing.md,
+    paddingVertical: spacing.xl,
   },
 });
 

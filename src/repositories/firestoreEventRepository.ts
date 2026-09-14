@@ -38,7 +38,6 @@ function toEvent(snapshot: QueryDocumentSnapshot<DocumentData>): CalendarEvent {
 }
 
 function mapError(error: unknown): EventError {
-    console.warn('firestore error', error);
   if (error instanceof FirebaseError) {
     const mapping: Record<string, { code: EventErrorCode; message: string }> = {
       'permission-denied': {

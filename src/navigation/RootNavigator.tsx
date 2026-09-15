@@ -8,11 +8,12 @@ import { TabNavigator } from './TabNavigator';
 import { useAuth } from '@/features/auth/AuthContext';
 import { colors } from '@/theme';
 import { EventFormScreen } from '@/features/events/screens/EventFormScreen';
+import { BiometricLockScreen } from '@/features/auth/screens/BiometricLockScreen';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
 export function RootNavigator() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, isLocked } = useAuth();
 
   if (isLoading) {
     return (
@@ -25,6 +26,9 @@ export function RootNavigator() {
   return (
     <NavigationContainer>
       {isAuthenticated ? (
+        isLocked ? (
+          <BiometricLockScreen />
+        ) : (
         <Stack.Navigator>
           <Stack.Screen
             name="Tabs"
@@ -44,6 +48,7 @@ export function RootNavigator() {
             })}
           />
         </Stack.Navigator>
+        )
       ) : (
         <AuthNavigator />
       )}

@@ -8,6 +8,8 @@ import React, {
 } from 'react';
 import { authRepository } from '@/repositories';
 import type { User } from '@/types/user';
+import { promptBiometrics } from '@/services/biometrics';
+import { isBiometricsEnabled, setBiometricsEnabled } from '@/services/preferences';
 
 type AuthContextValue = {
   user: User | null;
@@ -16,6 +18,10 @@ type AuthContextValue = {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  isLocked: boolean;
+  biometricsEnabled: boolean;
+  unlockWithBiometrics: () => Promise<boolean>;
+  toggleBiometrics: (enabled: boolean) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -23,27 +29,38 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLocked, setIsLocked] = useState(false);
+  const [biometricsEnabled, setBiometricsEnabledState] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
 
-    authRepository
-      .restoreSession()
-      .then(session => {
-        if (isMounted) {
-          setUser(session?.user ?? null);
+    const restore = async () => {
+      try {
+        const [session, enabled] = await Promise.all([
+          authRepository.restoreSession(),
+          isBiometricsEnabled(),
+        ]);
+
+        if (!isMounted) {
+          return;
         }
-      })
-      .catch(() => {
+
+        setUser(session?.user ?? null);
+        setBiometricsEnabledState(enabled);
+        setIsLocked(session !== null && enabled);
+      } catch {
         if (isMounted) {
           setUser(null);
         }
-      })
-      .finally(() => {
+      } finally {
         if (isMounted) {
           setIsLoading(false);
         }
-      });
+      }
+    };
+
+    void restore();
 
     return () => {
       isMounted = false;
@@ -53,16 +70,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = useCallback(async (email: string, password: string) => {
     const session = await authRepository.signIn({ email, password });
     setUser(session.user);
+    setIsLocked(false);
   }, []);
 
   const signUp = useCallback(async (email: string, password: string) => {
     const session = await authRepository.signUp({ email, password });
     setUser(session.user);
+    setIsLocked(false);
   }, []);
 
   const signOut = useCallback(async () => {
     await authRepository.signOut();
     setUser(null);
+    setIsLocked(false);
+  }, []);
+
+  const unlockWithBiometrics = useCallback(async () => {
+    const success = await promptBiometrics('Unlock your calendar');
+    if (success) {
+      setIsLocked(false);
+    }
+    return success;
+  }, []);
+
+  const toggleBiometrics = useCallback(async (enabled: boolean) => {
+    await setBiometricsEnabled(enabled);
+    setBiometricsEnabledState(enabled);
   }, []);
 
   const value = useMemo<AuthContextValue>(
@@ -73,8 +106,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signIn,
       signUp,
       signOut,
+      isLocked,
+      biometricsEnabled,
+      unlockWithBiometrics,
+      toggleBiometrics,
     }),
-    [user, isLoading, signIn, signUp, signOut],
+    [
+      user,
+      isLoading,
+      signIn,
+      signUp,
+      signOut,
+      isLocked,
+      biometricsEnabled,
+      unlockWithBiometrics,
+      toggleBiometrics,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

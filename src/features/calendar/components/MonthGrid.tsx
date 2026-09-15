@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
 import { Text } from '@/components/ui/Text';
 import {
+  formatFullDate,
   getMonthMatrix,
   isSameDay,
   WEEKDAY_LABELS,
@@ -75,7 +76,7 @@ const DayCell = React.memo(function DayCell({
       onPress={() => onPress(day.date)}
       accessibilityRole="button"
       accessibilityState={{ selected: isSelected }}
-      accessibilityLabel={`${day.dayOfMonth}, ${eventCount} events`}
+      accessibilityLabel={`${formatFullDate(day.date)}, ${eventCount} events`}
     >
       <View
         style={[

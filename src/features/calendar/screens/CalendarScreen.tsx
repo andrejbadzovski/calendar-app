@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
+import { Header } from '@/components/ui/Header';
 import { MonthGrid } from '../components/MonthGrid';
 import { CalendarHeader, type CalendarViewMode } from '../components/CalendarHeader';
 import { EventList } from '@/features/events/components/EventList';
@@ -75,6 +76,22 @@ export function CalendarScreen() {
 
   return (
     <Screen edges={['top']}>
+      <Header
+        title="Calendar"
+        right={
+          <Pressable
+            onPress={handleToday}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="Jump to today"
+          >
+            <Text variant="label" color="primary">
+              Today
+            </Text>
+          </Pressable>
+        }
+      />
+
       <CalendarHeader
         title={title}
         viewMode={viewMode}

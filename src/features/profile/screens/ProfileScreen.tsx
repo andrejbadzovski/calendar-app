@@ -3,6 +3,7 @@ import { View, Switch, StyleSheet } from 'react-native';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
+import { Header } from '@/components/ui/Header';
 import { useAuth } from '@/features/auth/AuthContext';
 import {
   checkBiometricAvailability,
@@ -23,9 +24,7 @@ export function ProfileScreen() {
 
   return (
     <Screen edges={['top']}>
-      <Text variant="h1" style={styles.title}>
-        Profile
-      </Text>
+      <Header title="Profile" />
 
       <View style={styles.card}>
         <Text variant="caption" color="textSecondary">
@@ -61,9 +60,6 @@ export function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    marginBottom: spacing.lg,
-  },
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.md,
